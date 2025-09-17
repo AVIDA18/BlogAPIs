@@ -17,19 +17,31 @@ namespace BlogApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
+            //For uniqueness of UserName and Email in User table
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.UserName)
+                .IsUnique();
+
+            //To restrict the deletion of author if he has at least one Blogs published.
             modelBuilder.Entity<Blog>()
                 .HasOne(b => b.Author)                  //Each blog can have one author
                 .WithMany()                             //Each author can have multiple blog
                 .HasForeignKey(b => b.AuthorId)         //Blog has fk authorId
                 .OnDelete(DeleteBehavior.Restrict);     //If author is tried to delete restrict delete.
 
+            //To delete all the comments if a Blog is deleted.
             modelBuilder.Entity<BlogComment>()
                 .HasOne(c => c.Blog)                    //Each blogcomment can have one blog
                 .WithMany()                             //Each blog can have multiple blog comment
                 .HasForeignKey(c => c.BlogId)           //blogComment has fk blogId
                 .OnDelete(DeleteBehavior.Cascade);      //Delete all related comments if a blog is deleted
-
+            
+            //To restrict the deletion of author if he has at least one comment published.
             modelBuilder.Entity<BlogComment>()
                 .HasOne(c => c.User)
                 .WithMany()
@@ -51,7 +63,7 @@ namespace BlogApi.Data
                 .HasOne(c => c.User)
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict);                
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
