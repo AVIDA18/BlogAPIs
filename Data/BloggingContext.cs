@@ -12,6 +12,7 @@ namespace BlogApi.Data
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<BlogComment> BlogComments { get; set; }
         public DbSet<BlogLike> BlogLikes { get; set; }
+        public DbSet<ToDo> ToDos { get; set; }
 
         //Study this properly.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
