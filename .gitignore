@@ -25,6 +25,7 @@ bld/
 
 # Ignore all contents inside wwwroot folder
 wwwroot/*
+!wwwroot/
 
 # .NET Core
 project.lock.json
