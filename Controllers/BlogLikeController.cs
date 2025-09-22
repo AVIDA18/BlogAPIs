@@ -76,7 +76,7 @@ namespace BlogApi.Controllers
             await _context.SaveChangesAsync();
 
             await _logger.LogAsync(
-                api: "/Api/BlogLike/RemoveBlogLike",
+                api: $"/Api/BlogLike/RemoveBlogLike/{blogId}",
                 payload: JsonSerializer.Serialize(blogLike),
                 response: "",
                 userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)

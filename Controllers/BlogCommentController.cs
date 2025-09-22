@@ -137,7 +137,7 @@ namespace BlogApi.Controllers
                 await _context.SaveChangesAsync();
 
                 await _logger.LogAsync(
-                    api: "/BlogCommetn/BlogComment/DeleteBlogComment",
+                    api: $"/BlogCommetn/BlogComment/DeleteBlogComment/{commentId}",
                     payload: JsonSerializer.Serialize(blogComment),
                     response: "",
                     userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)

@@ -47,7 +47,9 @@ namespace BlogApi.Controllers
             {
                 UserName = dto.UserName,
                 PasswordHash = passwordHash,
-                Email = dto.Email
+                Email = dto.Email,
+                Website = dto.Website
+
             };
 
             if (dto.ProfileImage != null)
@@ -85,7 +87,8 @@ namespace BlogApi.Controllers
                     Id = u.Id,
                     UserName = u.UserName,
                     Email = u.Email,
-                    Role = u.Role
+                    Role = u.Role,
+                    Website = u.Website
                 })
                 .ToListAsync();
 

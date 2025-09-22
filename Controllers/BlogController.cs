@@ -52,7 +52,8 @@ namespace BlogApi.Controllers
                 Title = blogDto.Title,
                 Content = blogDto.Content,
                 CreatedAt = DateTime.UtcNow,
-                AuthorId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)
+                AuthorId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value),
+                BlogCategoryId = blogDto.BlogCategoryId
             };
 
             _context.Blogs.Add(blog);
@@ -94,7 +95,7 @@ namespace BlogApi.Controllers
             await _context.SaveChangesAsync();
 
             await _logger.LogAsync(
-                api: "/Api/Blogs/EditBlogs",
+                api: $"/Api/Blogs/EditBlogs/{id}",
                 payload: JsonSerializer.Serialize(blog),
                 response: "",
                 userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)
@@ -127,7 +128,7 @@ namespace BlogApi.Controllers
             await _context.SaveChangesAsync();
 
             await _logger.LogAsync(
-                api: "/Api/Blogs/DeleteBlogs",
+                api: $"/Api/Blogs/DeleteBlogs/{id}",
                 payload: JsonSerializer.Serialize(blog),
                 response: "",
                 userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)
