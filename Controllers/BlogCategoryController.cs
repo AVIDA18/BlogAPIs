@@ -2,6 +2,7 @@ using System.Text.Json;
 using BlogApi.Data;
 using BlogApi.DTOs.BlogCategory;
 using BlogApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,6 +41,7 @@ namespace BlogApi.Controllers
         /// </summary>
         /// <param name="blogSaveDto"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Admin")]
         [HttpPost("addBlogCategory")]
         public async Task<IActionResult> AddNewBlogCategory([FromBody] BlogCategorySaveDto saveDto)
         {
@@ -68,6 +70,7 @@ namespace BlogApi.Controllers
         /// <param name="id"></param>
         /// <param name="blogSaveDto"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Admin")]
         [HttpPut("EditBlogCategory/{id}")]
         public async Task<IActionResult> EditBlogCategory(int id, [FromBody] BlogCategorySaveDto saveDto)
         {
@@ -76,21 +79,23 @@ namespace BlogApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var category = new Models.BlogCategory
+            var category = await _context.BlogCategories.FindAsync(id);
+            if (category == null)
             {
-                CategoryName = saveDto.CategoryName,
-                Description = saveDto.Description
-            };
+                return NotFound($"No BlogCategory found with ID {id}");
+            }
 
-            _context.BlogCategories.Update(category);
+            category.CategoryName = saveDto.CategoryName;
+            category.Description = saveDto.Description;
+
             await _context.SaveChangesAsync();
 
             await _logger.LogAsync(
                 api: $"/Api/BlogCategory/EditBlogCategory/{id}",
-                payload: JsonSerializer.Serialize(category),
+                payload: JsonSerializer.Serialize(saveDto),
                 response: "",
                 userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)
-                );
+            );
 
             return Ok(category);
         }
@@ -100,6 +105,7 @@ namespace BlogApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteBlogCategory/{id}")]
         public async Task<IActionResult> DeleteBlogCategory(int id)
         {

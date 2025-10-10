@@ -88,7 +88,7 @@ namespace BlogApi.Controllers
 
             // check if current user is the commenter or Admin
             int userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
-            string? role = Convert.ToString(User.Claims.FirstOrDefault(c => c.Type == "role")?.Value);
+            string? role = User.FindFirst(ClaimTypes.Role)?.Value;
             if (blogComment.UserId == userId || role == "Admin")
             {
                 blogComment.Comment = blogCommentEditDto.Comment;

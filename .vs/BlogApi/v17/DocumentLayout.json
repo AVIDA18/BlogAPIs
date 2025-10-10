@@ -1,10 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\LuZa\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\",
+  "WorkspaceRootPath": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|c:\\users\\luza\\desktop\\wait_till_\\blogapigit\\blogapis\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|solutionrelative:.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|c:\\users\\luza\\onedrive\\desktop\\wait_till_\\blogapigit\\blogapis\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|c:\\users\\luza\\onedrive\\desktop\\wait_till_\\blogapigit\\blogapis\\controllers\\blogcommentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|solutionrelative:controllers\\blogcommentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|c:\\users\\luza\\onedrive\\desktop\\wait_till_\\blogapigit\\blogapis\\controllers\\bloglikecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|solutionrelative:controllers\\bloglikecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,19 +22,45 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BlogLikeController.cs",
+              "DocumentMoniker": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\BlogLikeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\BlogLikeController.cs",
+              "ToolTip": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\BlogLikeController.cs",
+              "RelativeToolTip": "Controllers\\BlogLikeController.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-10T08:49:29.727Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "BlogCommentController.cs",
+              "DocumentMoniker": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\BlogCommentController.cs",
+              "RelativeDocumentMoniker": "Controllers\\BlogCommentController.cs",
+              "ToolTip": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\BlogCommentController.cs",
+              "RelativeToolTip": "Controllers\\BlogCommentController.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAwwFoAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-10T07:58:37.41Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": ".gitignore",
-              "DocumentMoniker": "C:\\Users\\LuZa\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\.gitignore",
-              "RelativeDocumentMoniker": ".gitignore",
-              "ToolTip": "C:\\Users\\LuZa\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\.gitignore",
-              "RelativeToolTip": ".gitignore",
-              "ViewState": "AgIAABUAAAAAAAAAAAAAAB4AAAARAAAAAAAAAA==",
-              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAF8SURBVDhPjVNLTgJBEG1lwpoFB3GNK9fieA48hD8iwT/ihwgSDAIHgAGXXsEV18CNzL/LquqZdsYM6kteXqcy3fWqpmpNRBgOhyABBEgpAFVKPIMUcYzUyOU\u002BXM/b2qtU3vkSfRjjZTCAMAw1A2LwzdFoBPP5HNqdzuL27n4juibWI\u002BUshBA1DIkhEx9iEorFotgslQqGYbxxAGFEqt1MxmPWJLbLZdZ\u002Bv89q5PMFPiTR6z2zdaxR0fXA0XTBcVywkb4fwHXjRteecIDNQ7UmExVYAdPcxYaqclN46na5WenMKjtlVnTYwcXlVYaDqImW9beD5N/TeGy32QHXm6hZ03ZgiSQHp2fnWQ4oBmJqWSqwAqZpZjt4aLXAD4J0VqyZsmoubfB8H2r1eoaD6NXZ9HcHO\u002BSA3f4AjifXl8rItOETM8ckB9WTWpYD9RdeZ1PWVWAHWXPQaDb59f/w8LiqHeh1pvGkCaP6qB8yXusoxmuNZ7XmII4O9vGuEF86osuDYRkpYQAAAABJRU5ErkJggg==",
-              "WhenOpened": "2025-09-18T06:06:47.904Z",
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-10T07:55:22.543Z",
               "EditorCaption": ""
             }
           ]

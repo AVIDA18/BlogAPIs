@@ -21,8 +21,7 @@ namespace BlogApi.Migrations
                 name: "BlogCategoryId",
                 table: "Blogs",
                 type: "int",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
 
             migrationBuilder.CreateTable(
                 name: "BlogCategories",

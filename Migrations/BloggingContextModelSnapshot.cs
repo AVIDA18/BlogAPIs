@@ -64,7 +64,7 @@ namespace BlogApi.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BlogCategoryId")
+                    b.Property<int?>("BlogCategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
@@ -255,8 +255,7 @@ namespace BlogApi.Migrations
                     b.HasOne("BlogApi.Models.BlogCategory", "BlogCategory")
                         .WithMany()
                         .HasForeignKey("BlogCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Author");
 

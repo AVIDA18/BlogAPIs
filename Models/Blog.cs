@@ -6,7 +6,7 @@ namespace BlogApi.Models
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-        public int BlogCategoryId { get; set; }
+        public int? BlogCategoryId { get; set; }
         public BlogCategory? BlogCategory { get; set; }
         public int AuthorId { get; set; }
         public User? Author { get; set; }

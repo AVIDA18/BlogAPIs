@@ -1,12 +1,71 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\LuZa\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\",
-  "Documents": [],
+  "WorkspaceRootPath": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|c:\\users\\luza\\onedrive\\desktop\\wait_till_\\blogapigit\\blogapis\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|c:\\users\\luza\\onedrive\\desktop\\wait_till_\\blogapigit\\blogapis\\controllers\\bloglikecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|solutionrelative:controllers\\bloglikecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|c:\\users\\luza\\onedrive\\desktop\\wait_till_\\blogapigit\\blogapis\\controllers\\blogcommentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|solutionrelative:controllers\\blogcommentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "BlogLikeController.cs",
+              "DocumentMoniker": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\BlogLikeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\BlogLikeController.cs",
+              "ToolTip": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\BlogLikeController.cs",
+              "RelativeToolTip": "Controllers\\BlogLikeController.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-10T08:49:29.727Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BlogCommentController.cs",
+              "DocumentMoniker": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\BlogCommentController.cs",
+              "RelativeDocumentMoniker": "Controllers\\BlogCommentController.cs",
+              "ToolTip": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\BlogCommentController.cs",
+              "RelativeToolTip": "Controllers\\BlogCommentController.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAwwFoAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-10T07:58:37.41Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAAJQAAAAAAAAAAAAowKIAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-10T07:55:22.543Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

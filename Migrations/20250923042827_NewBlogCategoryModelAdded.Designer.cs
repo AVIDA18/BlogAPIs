@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogApi.Migrations
 {
     [DbContext(typeof(BloggingContext))]
-    [Migration("20250922082530_NewBlogCategoryModelAdded")]
+    [Migration("20250923042827_NewBlogCategoryModelAdded")]
     partial class NewBlogCategoryModelAdded
     {
         /// <inheritdoc />
@@ -67,7 +67,7 @@ namespace BlogApi.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BlogCategoryId")
+                    b.Property<int?>("BlogCategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
@@ -258,8 +258,7 @@ namespace BlogApi.Migrations
                     b.HasOne("BlogApi.Models.BlogCategory", "BlogCategory")
                         .WithMany()
                         .HasForeignKey("BlogCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Author");
 

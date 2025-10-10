@@ -126,7 +126,7 @@ namespace BlogApi.Controllers
             {
                 new Claim("id", user.Id.ToString()),
                 new Claim("username", user.UserName.ToString()),
-                new Claim("role", user.Role.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
         };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
@@ -142,5 +142,46 @@ namespace BlogApi.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("ModifyUser")]
+        public async Task<IActionResult> ModifyUser([FromBody] UserModifyDto userModifyDto)
+        {
+            var user = await _context.Users.FindAsync(userModifyDto.UserId);
+            if (user == null)
+                return NotFound();
+
+            // check if current user is the commenter or Admin
+            int userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+            string? role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role == "Admin")
+            {
+                if (user.Role == "User")
+                {
+                    user.Role = "Admin";
+                }
+                else
+                {
+                    user.Role = "User";
+                }
+
+                await _context.SaveChangesAsync();
+
+                await _logger.LogAsync(
+                    api: "api/Auth/ModifyUser",
+                    payload: JsonSerializer.Serialize(user),
+                    response: "",
+                    userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)
+                    );
+
+                return Ok(user);
+            }
+            else
+            {
+                return Forbid();
+            }
+
+        }
+    
     }
 }
