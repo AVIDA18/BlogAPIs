@@ -8,6 +8,16 @@ using BlogApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()          // Allows all origins
+              .AllowAnyMethod()          // Allows all HTTP methods
+              .AllowAnyHeader();         // Allows all headers
+    });
+});
+
 builder.Services.AddDbContext<BloggingContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -81,13 +91,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+
+// Add CORS middleware to allow all origins
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseHttpsRedirection();
 
 app.MapControllers();
 
