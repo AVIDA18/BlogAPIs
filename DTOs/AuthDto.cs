@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BlogApi.DTOs.User
+namespace BlogApi.DTOs
 {
-    public class UserLoginDto
+    public class AuthDto
     {
         [Required]
         public string UserName { get; set; } = string.Empty;
