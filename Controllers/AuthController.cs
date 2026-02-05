@@ -7,9 +7,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.AspNetCore.Authorization;
 using BlogApi.Services;
-using System.Text.Json;
+using BlogApi.DTOs;
 
 namespace BlogApi.Controllers
 {
@@ -19,82 +18,14 @@ namespace BlogApi.Controllers
     {
         private readonly BloggingContext _context;
         private readonly IConfiguration _config;
-        private readonly IWebHostEnvironment _env;
         private readonly IApiLogger _logger;
 
         public AuthController(BloggingContext context, IConfiguration config, IWebHostEnvironment env, IApiLogger logger)
         {
             _context = context;
             _config = config;
-            _env = env;
             _logger = logger;
         }
-
-        /// <summary>
-        /// This api is to add a new user for login.
-        /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromForm] UserRegisterDto dto)
-        {
-            if (await _context.Users.AnyAsync(u => u.UserName == dto.UserName))
-                return BadRequest("Username already exists");
-
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-
-            var user = new User
-            {
-                UserName = dto.UserName,
-                PasswordHash = passwordHash,
-                Email = dto.Email,
-                Website = dto.Website
-
-            };
-
-            if (dto.ProfileImage != null)
-            {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.ProfileImage.FileName);
-                var filePath = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", fileName);
-
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await dto.ProfileImage.CopyToAsync(stream);
-                }
-
-                user.ProfileImagePath = "/uploads/" + fileName;
-            }
-
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-
-            return Ok("User registered successfully");
-        }
-
-        /// <summary>
-        /// This is the api to get all the users. Only the users with role "admin" gets to use this api.
-        /// </summary>
-        /// <returns></returns>
-        [Authorize(Roles = "Admin")]
-        [HttpGet("getUsers")]
-        public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetUsers()
-        {
-            var users = await _context.Users
-                .Select(u => new UserResponseDto
-                {
-                    Id = u.Id,
-                    UserName = u.UserName,
-                    Email = u.Email,
-                    Role = u.Role,
-                    Website = u.Website
-                })
-                .ToListAsync();
-
-            return Ok(users);
-        }
-
 
         /// <summary>
         /// Api to log into the system.
@@ -102,7 +33,7 @@ namespace BlogApi.Controllers
         /// <param name="dto"></param>
         /// <returns></returns>
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserLoginDto dto)
+        public async Task<IActionResult> Login(AuthDto dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName);
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
@@ -143,45 +74,7 @@ namespace BlogApi.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPost("ModifyUser")]
-        public async Task<IActionResult> ModifyUser([FromBody] UserModifyDto userModifyDto)
-        {
-            var user = await _context.Users.FindAsync(userModifyDto.UserId);
-            if (user == null)
-                return NotFound();
-
-            // check if current user is the commenter or Admin
-            int userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
-            string? role = User.FindFirst(ClaimTypes.Role)?.Value;
-            if (role == "Admin")
-            {
-                if (user.Role == "User")
-                {
-                    user.Role = "Admin";
-                }
-                else
-                {
-                    user.Role = "User";
-                }
-
-                await _context.SaveChangesAsync();
-
-                await _logger.LogAsync(
-                    api: "api/Auth/ModifyUser",
-                    payload: JsonSerializer.Serialize(user),
-                    response: "",
-                    userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)
-                    );
-
-                return Ok(user);
-            }
-            else
-            {
-                return Forbid();
-            }
-
-        }
+        
     
     }
 }
