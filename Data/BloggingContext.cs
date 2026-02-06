@@ -1,4 +1,5 @@
 using BlogApi.Models;
+using BlogApis.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Data
@@ -11,6 +12,7 @@ namespace BlogApi.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<BlogCategory> BlogCategories { get; set; }
+        public DbSet<BlogImages> BlogImages { get; set; }
         public DbSet<BlogComment> BlogComments { get; set; }
         public DbSet<BlogLike> BlogLikes { get; set; }
         public DbSet<ToDo> ToDos { get; set; }
@@ -50,29 +52,31 @@ namespace BlogApi.Data
                 .HasForeignKey(c => c.BlogId)           //blogComment has fk blogId
                 .OnDelete(DeleteBehavior.Cascade);      //Delete all related comments if a blog is deleted
 
-            //To restrict the deletion of author if he has at least one comment published.
+            //To delete all comments if the author is deleted.
             modelBuilder.Entity<BlogComment>()
                 .HasOne(c => c.User)
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Create a unique index for the combination of BlogId and UserId in BlogLikes
+            //To delete all the likes if the author is deleted.
             modelBuilder.Entity<BlogLike>()
-                .HasIndex(bl => new { bl.BlogId, bl.UserId })
-                .IsUnique();
+                .HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            //To delete all the likes if a Blog is deleted.
             modelBuilder.Entity<BlogLike>()
                 .HasOne(c => c.Blog)
                 .WithMany()
                 .HasForeignKey(c => c.BlogId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Create a unique index for the combination of BlogId and UserId in BlogLikes
             modelBuilder.Entity<BlogLike>()
-                .HasOne(c => c.User)
-                .WithMany()
-                .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasIndex(bl => new { bl.BlogId, bl.UserId })
+                .IsUnique();
         }
     }
 }
