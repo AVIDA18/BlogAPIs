@@ -67,12 +67,18 @@ namespace BlogApi.Migrations
                     b.Property<int?>("BlogCategoryId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("BlogImageId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("ImageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -83,6 +89,8 @@ namespace BlogApi.Migrations
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("BlogCategoryId");
+
+                    b.HasIndex("ImageId");
 
                     b.ToTable("Blogs");
                 });
@@ -244,6 +252,29 @@ namespace BlogApi.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("BlogApis.Models.BlogImages", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AltTxt")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlogImages");
+                });
+
             modelBuilder.Entity("BlogApi.Models.Blog", b =>
                 {
                     b.HasOne("BlogApi.Models.User", "Author")
@@ -257,9 +288,15 @@ namespace BlogApi.Migrations
                         .HasForeignKey("BlogCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("BlogApis.Models.BlogImages", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
                     b.Navigation("Author");
 
                     b.Navigation("BlogCategory");
+
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("BlogApi.Models.BlogComment", b =>
@@ -273,7 +310,7 @@ namespace BlogApi.Migrations
                     b.HasOne("BlogApi.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Blog");
@@ -292,7 +329,7 @@ namespace BlogApi.Migrations
                     b.HasOne("BlogApi.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Blog");

@@ -23,19 +23,69 @@ namespace BlogApi.Controllers
         }
 
         /// <summary>
-        /// This is the api that gets all the blogs anyone can use this api to list the blogs.
+        /// This is the api that gets all the blogs anyone can use this api to list the blogs.With filters
+        /// like select auther wise or categorywise blogs.
         /// </summary>
         /// <returns></returns>
+        
+        // [HttpGet("getBlogs")]
+        // public async Task<IActionResult> GetBlogs()
+        // {
+        //     var blogs = await _context.Blogs
+        //         .Include(b => b.Author)
+        //         .OrderByDescending(b => b.CreatedAt)
+        //         .ToListAsync();
+
+        //     return Ok(blogs);
+        // }
+
         [HttpGet("getBlogs")]
-        public async Task<IActionResult> GetBlogs()
+        public async Task<IActionResult> GetBlogs(
+            int page = 1,
+            int pageSize = 10,
+            int? categoryId = null,
+            int? authorId = null)
         {
-            var blogs = await _context.Blogs
+            page = page < 1 ? 1 : page;
+            pageSize = pageSize < 1 ? 10 : pageSize;
+            pageSize = Math.Min(pageSize, 50);
+
+            IQueryable<Blog> query = _context.Blogs
                 .Include(b => b.Author)
+                .Include(b => b.BlogCategory)
+                .Include(b => b.Image);
+
+            // Filter by category (if selected)
+            if (categoryId.HasValue)
+            {
+                query = query.Where(b => b.BlogCategoryId == categoryId);
+            }
+
+            // Filter by author (if selected)
+            if (authorId.HasValue)
+            {
+                query = query.Where(b => b.AuthorId == authorId);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var blogs = await query
                 .OrderByDescending(b => b.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return Ok(blogs);
+            return Ok(new
+            {
+                data = blogs,
+                page,
+                pageSize,
+                totalCount,
+                totalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
         }
+
+
 
 
         /// <summary>
