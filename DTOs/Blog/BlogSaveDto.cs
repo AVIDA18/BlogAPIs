@@ -10,5 +10,7 @@ namespace BlogApi.DTOs.Blog
         public string Title { get; set; } = string.Empty;
         [Required]
         public string Content { get; set; } = string.Empty;
+        //public List<string>? ImageUrls { get; set; }
+        public List<IFormFile>? Files { get; set; }
     }
 }

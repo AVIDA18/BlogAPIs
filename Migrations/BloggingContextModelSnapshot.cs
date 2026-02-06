@@ -67,18 +67,12 @@ namespace BlogApi.Migrations
                     b.Property<int?>("BlogCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BlogImageId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("ImageId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -89,8 +83,6 @@ namespace BlogApi.Migrations
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("BlogCategoryId");
-
-                    b.HasIndex("ImageId");
 
                     b.ToTable("Blogs");
                 });
@@ -263,6 +255,9 @@ namespace BlogApi.Migrations
                     b.Property<string>("AltTxt")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("BlogId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -271,6 +266,8 @@ namespace BlogApi.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BlogId");
 
                     b.ToTable("BlogImages");
                 });
@@ -288,15 +285,9 @@ namespace BlogApi.Migrations
                         .HasForeignKey("BlogCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("BlogApis.Models.BlogImages", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
-
                     b.Navigation("Author");
 
                     b.Navigation("BlogCategory");
-
-                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("BlogApi.Models.BlogComment", b =>
@@ -344,6 +335,22 @@ namespace BlogApi.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BlogApis.Models.BlogImages", b =>
+                {
+                    b.HasOne("BlogApi.Models.Blog", "Blog")
+                        .WithMany("Images")
+                        .HasForeignKey("BlogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Blog");
+                });
+
+            modelBuilder.Entity("BlogApi.Models.Blog", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

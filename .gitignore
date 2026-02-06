@@ -247,8 +247,8 @@ logs/
 *.log
 
 # Uploaded files (keep the folder structure but ignore content)
-wwwroot/*
-!wwwroot/.gitkeep
+wwwroot/uploads/*
+!wwwroot/uploads/**/.gitkeep
 
 # Environment variables
 .env

@@ -77,6 +77,14 @@ namespace BlogApi.Data
             modelBuilder.Entity<BlogLike>()
                 .HasIndex(bl => new { bl.BlogId, bl.UserId })
                 .IsUnique();
+
+            // One Blog can have Many Images blog when deleted delets all images
+            modelBuilder.Entity<Blog>()
+                .HasMany(b => b.Images)
+                .WithOne(i => i.Blog)
+                .HasForeignKey(i => i.BlogId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

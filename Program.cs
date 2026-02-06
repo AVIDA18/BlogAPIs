@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BlogApi.Services;
+using BlogApis.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,8 @@ builder.Services.AddDbContext<BloggingContext>(options =>
 builder.Host.UseSerilog();
 //This is to save all the api hits with userId request and response in the database.
 builder.Services.AddScoped<IApiLogger, ApiLogger>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<ImageHelper>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

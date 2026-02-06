@@ -10,8 +10,9 @@ namespace BlogApi.Models
         public DateTime CreatedAt { get; set; }
         public int? BlogCategoryId { get; set; }
         public BlogCategory? BlogCategory { get; set; }
-        public int? BlogImageId { get; set; }
-        public BlogImages? Image { get; set; }
+        // ONE blog --> MANY images
+        public ICollection<BlogImages> Images { get; set; } = new List<BlogImages>();
+        
         public int AuthorId { get; set; }
         public User? Author { get; set; }
     }

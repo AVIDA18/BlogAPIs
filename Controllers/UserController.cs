@@ -96,8 +96,8 @@ namespace BlogApi.Controllers
         /// <param name="userModifyDto"></param>
         /// <returns></returns>
         [Authorize(Roles = "Admin")]
-        [HttpPost("ModifyUser")]
-        public async Task<IActionResult> ModifyUser([FromBody] UserModifyDto userModifyDto)
+        [HttpPost("ModifyUserRole")]
+        public async Task<IActionResult> ModifyUserRole([FromBody] UserModifyDto userModifyDto)
         {
             var user = await _context.Users.FindAsync(userModifyDto.UserId);
             if (user == null)
