@@ -15,11 +15,13 @@ namespace BlogApi.Controllers
     {
         private readonly BloggingContext _context;
         private readonly IApiLogger _logger;
+        private readonly IFileService _fileService;
 
-        public BlogController(BloggingContext context, IApiLogger logger)
+        public BlogController(BloggingContext context, IApiLogger logger, IFileService fileService)
         {
             _context = context;
             _logger = logger;
+            _fileService = fileService;
         }
 
         /// <summary>
@@ -53,7 +55,7 @@ namespace BlogApi.Controllers
             IQueryable<Blog> query = _context.Blogs
                 .Include(b => b.Author)
                 .Include(b => b.BlogCategory)
-                .Include(b => b.Image);
+                .Include(b => b.Images);
 
             // Filter by category (if selected)
             if (categoryId.HasValue)
@@ -97,26 +99,50 @@ namespace BlogApi.Controllers
         [HttpPost("postBlogs")]
         public async Task<IActionResult> CreateBlog([FromBody] BlogSaveDto blogDto)
         {
-            var blog = new Blog
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                Title = blogDto.Title,
-                Content = blogDto.Content,
-                CreatedAt = DateTime.UtcNow,
-                AuthorId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value),
-                BlogCategoryId = blogDto.BlogCategoryId
-            };
+                var blog = new Blog
+                {
+                    Title = blogDto.Title,
+                    Content = blogDto.Content,
+                    CreatedAt = DateTime.UtcNow,
+                    AuthorId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value),
+                    BlogCategoryId = blogDto.BlogCategoryId
+                };
 
-            _context.Blogs.Add(blog);
-            await _context.SaveChangesAsync();
+                _context.Blogs.Add(blog);
+                await _context.SaveChangesAsync();
 
-            await _logger.LogAsync(
-                api: "/Api/Blogs/PostBlogs",
-                payload: JsonSerializer.Serialize(blog),
-                response: "",
-                userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)
-                );
+                if (blogDto.ImageUrls?.Any() == true)
+                {
+                    var images = blogDto.ImageUrls.Select(url => new BlogApis.Models.BlogImages
+                    {
+                        BlogId = blog.Id,
+                        ImageUrl = url,
+                        CreatedAt = DateTime.UtcNow
+                    }).ToList();
 
-            return Ok(blog);
+                    _context.Set<BlogApis.Models.BlogImages>().AddRange(images);
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                await _logger.LogAsync(
+                    api: "/Api/Blogs/PostBlogs",
+                    payload: JsonSerializer.Serialize(blog),
+                    response: "",
+                    userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)
+                    );
+
+                return Ok(blog);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         /// <summary>
@@ -129,29 +155,59 @@ namespace BlogApi.Controllers
         [HttpPut("EditBlogs/{id}")]
         public async Task<IActionResult> UpdateBlog(int id, [FromBody] BlogSaveDto blogDto)
         {
-            var blog = await _context.Blogs.FindAsync(id);
-            if (blog == null)
-                return NotFound();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var blog = await _context.Blogs.Include(b => b.Images).FirstOrDefaultAsync(b => b.Id == id);
+                if (blog == null)
+                    return NotFound();
 
-            // check if current user is the author
-            int userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+                int userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
 
-            if (blog.AuthorId != userId)
-                return Forbid();
+                if (blog.AuthorId != userId)
+                    return Forbid();
 
-            blog.Title = blogDto.Title;
-            blog.Content = blogDto.Content;
+                blog.Title = blogDto.Title;
+                blog.Content = blogDto.Content;
 
-            await _context.SaveChangesAsync();
+                if (blogDto.ImageUrls != null)
+                {
+                    var oldImageUrls = blog.Images.Select(i => i.ImageUrl).ToList();
+                    
+                    _context.Set<BlogApis.Models.BlogImages>().RemoveRange(blog.Images);
+                    var newImages = blogDto.ImageUrls.Select(url => new BlogApis.Models.BlogImages
+                    {
+                        BlogId = blog.Id,
+                        ImageUrl = url,
+                        CreatedAt = DateTime.UtcNow
+                    }).ToList();
+                    _context.Set<BlogApis.Models.BlogImages>().AddRange(newImages);
+                    
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    
+                    await _fileService.DeleteImagesAsync(oldImageUrls);
+                }
+                else
+                {
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
 
-            await _logger.LogAsync(
-                api: $"/Api/Blogs/EditBlogs/{id}",
-                payload: JsonSerializer.Serialize(blog),
-                response: "",
-                userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)
-                );
+                await _logger.LogAsync(
+                    api: $"/Api/Blogs/EditBlogs/{id}",
+                    payload: JsonSerializer.Serialize(blog),
+                    response: "",
+                    userId: Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value)
+                    );
 
-            return Ok(blog);
+                return Ok(blog);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         /// <summary>
@@ -164,18 +220,21 @@ namespace BlogApi.Controllers
         [HttpDelete("DeleteBlogs/{id}")]
         public async Task<IActionResult> DeleteBlog(int id)
         {
-            var blog = await _context.Blogs.FindAsync(id);
+            var blog = await _context.Blogs.Include(b => b.Images).FirstOrDefaultAsync(b => b.Id == id);
             if (blog == null)
                 return NotFound();
 
-            // check if current user is the author
             int userId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
 
             if (blog.AuthorId != userId)
                 return Forbid();
 
+            var imageUrls = blog.Images.Select(i => i.ImageUrl).ToList();
+
             _context.Blogs.Remove(blog);
             await _context.SaveChangesAsync();
+
+            await _fileService.DeleteImagesAsync(imageUrls);
 
             await _logger.LogAsync(
                 api: $"/Api/Blogs/DeleteBlogs/{id}",

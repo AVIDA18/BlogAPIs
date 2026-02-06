@@ -24,6 +24,7 @@ builder.Services.AddDbContext<BloggingContext>(options =>
 builder.Host.UseSerilog();
 //This is to save all the api hits with userId request and response in the database.
 builder.Services.AddScoped<IApiLogger, ApiLogger>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
