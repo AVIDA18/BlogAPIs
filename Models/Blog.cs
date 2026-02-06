@@ -11,7 +11,7 @@ namespace BlogApi.Models
         public int? BlogCategoryId { get; set; }
         public BlogCategory? BlogCategory { get; set; }
         // ONE blog --> MANY images
-        public ICollection<BlogImage> Images { get; set; } = new List<BlogImage>();
+        public ICollection<BlogImages> Images { get; set; } = new List<BlogImages>();
         
         public int AuthorId { get; set; }
         public User? Author { get; set; }
