@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using BlogApi.Models;
 using BlogApi.Data;
 using BlogApi.DTOs.User;
 using System.Security.Claims;
@@ -16,57 +15,12 @@ namespace BlogApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly BloggingContext _context;
-        private readonly IWebHostEnvironment _env;
         private readonly IApiLogger _logger;
 
-        public UserController(BloggingContext context, IWebHostEnvironment env, IApiLogger logger)
+        public UserController(BloggingContext context, IWebHostEnvironment env, IApiLogger logger, IConfiguration config, IEmailService emailService)
         {
             _context = context;
-            _env = env;
             _logger = logger;
-        }
-
-        /// <summary>
-        /// This api is to add a new user for login.
-        /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromForm] UserRegisterDto dto)
-        {
-            if (await _context.Users.AnyAsync(u => u.UserName == dto.UserName))
-                return BadRequest("Username already exists");
-
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-
-            var user = new User
-            {
-                UserName = dto.UserName,
-                PasswordHash = passwordHash,
-                Email = dto.Email,
-                Website = dto.Website
-
-            };
-
-            if (dto.ProfileImage != null)
-            {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.ProfileImage.FileName);
-                var filePath = Path.Combine(_env.WebRootPath ?? "wwwroot", "Profile", fileName);
-
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await dto.ProfileImage.CopyToAsync(stream);
-                }
-
-                user.ProfileImagePath = "/Profile/" + fileName;
-            }
-
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-
-            return Ok("User registered successfully");
         }
 
         /// <summary>

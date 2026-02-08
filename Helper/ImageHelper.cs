@@ -1,6 +1,6 @@
 using BlogApi.Services;
 
-namespace BlogApis.Helper
+namespace BlogApi.Helper
 {
     public class ImageHelper
     {

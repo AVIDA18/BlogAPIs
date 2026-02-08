@@ -74,15 +74,24 @@ namespace BlogApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(600)
+                        .HasColumnType("nvarchar(600)");
+
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(600)
+                        .HasColumnType("nvarchar(600)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("BlogCategoryId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("Blogs");
                 });
@@ -97,7 +106,8 @@ namespace BlogApi.Migrations
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -121,7 +131,8 @@ namespace BlogApi.Migrations
 
                     b.Property<string>("Comment")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("CommentedAt")
                         .HasColumnType("datetime2");
@@ -136,6 +147,35 @@ namespace BlogApi.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("BlogComments");
+                });
+
+            modelBuilder.Entity("BlogApi.Models.BlogImages", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AltTxt")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("BlogId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogId");
+
+                    b.ToTable("BlogImages");
                 });
 
             modelBuilder.Entity("BlogApi.Models.BlogLike", b =>
@@ -212,7 +252,19 @@ namespace BlogApi.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("EmailConfirmationToken")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("EmailConfirmationTokenExpires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -227,11 +279,12 @@ namespace BlogApi.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Website")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 
@@ -242,34 +295,6 @@ namespace BlogApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("BlogApis.Models.BlogImages", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AltTxt")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("BlogId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BlogId");
-
-                    b.ToTable("BlogImages");
                 });
 
             modelBuilder.Entity("BlogApi.Models.Blog", b =>
@@ -309,6 +334,17 @@ namespace BlogApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BlogApi.Models.BlogImages", b =>
+                {
+                    b.HasOne("BlogApi.Models.Blog", "Blog")
+                        .WithMany("Images")
+                        .HasForeignKey("BlogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Blog");
+                });
+
             modelBuilder.Entity("BlogApi.Models.BlogLike", b =>
                 {
                     b.HasOne("BlogApi.Models.Blog", "Blog")
@@ -335,17 +371,6 @@ namespace BlogApi.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("BlogApis.Models.BlogImages", b =>
-                {
-                    b.HasOne("BlogApi.Models.Blog", "Blog")
-                        .WithMany("Images")
-                        .HasForeignKey("BlogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Blog");
                 });
 
             modelBuilder.Entity("BlogApi.Models.Blog", b =>

@@ -1,5 +1,4 @@
 using BlogApi.Models;
-using BlogApis.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Data
@@ -30,6 +29,11 @@ namespace BlogApi.Data
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.UserName)
                 .IsUnique();
+
+            //For uniqueness of blog
+            modelBuilder.Entity<Blog>()
+                .HasIndex(u => u.Slug)
+                .IsUnique();            
 
             // Restrict deletion of BlogCategory if it has related Blogs
             modelBuilder.Entity<Blog>()
@@ -85,6 +89,15 @@ namespace BlogApi.Data
                 .HasForeignKey(i => i.BlogId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            //For the email
+            modelBuilder.Entity<User>(entity =>
+            {
+               entity.HasIndex(e=> e.Email).IsUnique();
+               
+               entity.Property(e => e.EmailConfirmationToken)
+                .IsUnicode(false)
+                .HasMaxLength(100);
+            });
         }
     }
 }
