@@ -16,7 +16,7 @@ namespace BlogApi.Models
         public string Role { get; set; } = "User";
         //Email
         public bool EmailConfirmed { get; set; } = false;
-        public string? EmailConfirmationToken { get; set; } = string.Empty;
+        public string? EmailConfirmationToken { get; set; }
         public DateTime? EmailConfirmationTokenExpires { get; set; }
     }
 }

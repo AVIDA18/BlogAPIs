@@ -75,7 +75,6 @@ namespace BlogApi.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Slug")
-                        .IsRequired()
                         .HasMaxLength(600)
                         .HasColumnType("nvarchar(600)");
 
@@ -91,7 +90,8 @@ namespace BlogApi.Migrations
                     b.HasIndex("BlogCategoryId");
 
                     b.HasIndex("Slug")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Slug] IS NOT NULL");
 
                     b.ToTable("Blogs");
                 });
