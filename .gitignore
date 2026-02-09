@@ -274,4 +274,4 @@ Thumbs.db
 # Application specific
 appsettings.Development.json
 appsettings.*.json
-!appsettings.json
+appsettings.json

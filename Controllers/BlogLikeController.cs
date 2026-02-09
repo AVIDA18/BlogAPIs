@@ -23,6 +23,24 @@ namespace BlogApi.Controllers
         }
 
         /// <summary>
+        /// This is the api to list all the related likes to a blog.
+        /// </summary>
+        /// <param name="blogId"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("{blogId}/Likes")]
+        public async Task<IActionResult> GetLikesByBlogId(int blogId)
+        {
+            var comments = await _context.BlogLikes
+                .Include(c => c.User)
+                .Where(c => c.BlogId == blogId)
+                .OrderByDescending(c => c.LikedAt)
+                .ToListAsync();
+
+            return Ok(comments);
+        }
+
+        /// <summary>
         /// Api to add like if the blog is liked.
         /// 
         /// </summary>

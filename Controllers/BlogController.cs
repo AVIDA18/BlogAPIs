@@ -3,7 +3,7 @@ using BlogApi.Data;
 using BlogApi.DTOs.Blog;
 using BlogApi.Models;
 using BlogApi.Services;
-using BlogApis.Helper;
+using BlogApi.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -91,7 +91,20 @@ namespace BlogApi.Controllers
             });
         }
 
+        [HttpGet("getBlogsByTitleSlug/{slug}")]
+        public async Task<IActionResult> GetBlogBySlug(string slug)
+        {
+            var blog = await _context.Blogs
+                .Include(b => b.Author)
+                .Include(b => b.BlogCategory)
+                .Include(b => b.Images)
+                .FirstOrDefaultAsync(b => b.Slug == slug);
 
+            if (blog == null)
+                return NotFound();
+
+            return Ok(blog);
+        }
 
 
         /// <summary>
@@ -110,6 +123,7 @@ namespace BlogApi.Controllers
                 {
                     Title = blogDto.Title,
                     Content = blogDto.Content,
+                    Slug = SlugHelper.GenerateSlug(blogDto.Title),
                     CreatedAt = DateTime.UtcNow,
                     AuthorId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value),
                     BlogCategoryId = blogDto.BlogCategoryId
@@ -124,14 +138,14 @@ namespace BlogApi.Controllers
 
                 if (uploadedImageUrls.Any())
                 {
-                    var images = uploadedImageUrls.Select(url => new BlogApis.Models.BlogImages
+                    var images = uploadedImageUrls.Select(url => new BlogApi.Models.BlogImages
                     {
                         BlogId = blog.Id,
                         ImageUrl = url,
                         CreatedAt = DateTime.UtcNow
                     }).ToList();
 
-                    _context.Set<BlogApis.Models.BlogImages>().AddRange(images);
+                    _context.Set<BlogApi.Models.BlogImages>().AddRange(images);
                     await _context.SaveChangesAsync();
                 }
 
@@ -196,6 +210,7 @@ namespace BlogApi.Controllers
                     return Forbid();
 
                 blog.Title = blogDto.Title;
+                blog.Slug = SlugHelper.GenerateSlug(blogDto.Title);
                 blog.Content = blogDto.Content;
 
                 var uploadedImageUrls = blogDto.Files != null 
@@ -208,16 +223,16 @@ namespace BlogApi.Controllers
                     var oldImageUrls = blog.Images.Select(i => i.ImageUrl).ToList();
 
                     // Remove old images from DB
-                    _context.Set<BlogApis.Models.BlogImages>().RemoveRange(blog.Images);
+                    _context.Set<BlogApi.Models.BlogImages>().RemoveRange(blog.Images);
 
                     // Add new images to DB
-                    var newImages = uploadedImageUrls.Select(url => new BlogApis.Models.BlogImages
+                    var newImages = uploadedImageUrls.Select(url => new BlogApi.Models.BlogImages
                     {
                         BlogId = blog.Id,
                         ImageUrl = url,
                         CreatedAt = DateTime.UtcNow
                     }).ToList();
-                    _context.Set<BlogApis.Models.BlogImages>().AddRange(newImages);
+                    _context.Set<BlogApi.Models.BlogImages>().AddRange(newImages);
 
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();

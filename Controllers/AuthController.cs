@@ -17,15 +17,104 @@ namespace BlogApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly BloggingContext _context;
-        private readonly IConfiguration _config;
+        private readonly IWebHostEnvironment _env;
         private readonly IApiLogger _logger;
+        private readonly IConfiguration _config;
+        private readonly IEmailService _emailService;
 
-        public AuthController(BloggingContext context, IConfiguration config, IWebHostEnvironment env, IApiLogger logger)
+        public AuthController(BloggingContext context, IWebHostEnvironment env, IApiLogger logger, IConfiguration config, IEmailService emailService)
         {
             _context = context;
-            _config = config;
+            _env = env;
             _logger = logger;
+            _config = config;
+            _emailService = emailService;
         }
+
+        /// <summary>
+        /// This api is to add a new user for login.
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        [HttpPost("SignUp")]
+        public async Task<IActionResult> Register([FromForm] UserRegisterDto dto)
+        {
+            if (await _context.Users.AnyAsync(u => u.UserName == dto.UserName))
+                return BadRequest("Username already exists");
+
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+            var user = new User
+            {
+                Email = dto.Email,
+                UserName = dto.UserName,
+                PasswordHash = passwordHash,
+                Website = dto.Website,
+                EmailConfirmed = false,
+                EmailConfirmationToken = Guid.NewGuid().ToString("N"),
+                EmailConfirmationTokenExpires = DateTime.UtcNow.AddHours(24)
+
+            };
+
+            if (dto.ProfileImage != null)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.ProfileImage.FileName);
+                var filePath = Path.Combine(_env.WebRootPath ?? "wwwroot", "Profile", fileName);
+
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.ProfileImage.CopyToAsync(stream);
+                }
+
+                user.ProfileImagePath = "/Profile/" + fileName;
+            }
+
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+
+            var verifyUrl =
+                $"{_config["App:BaseUrl"]}/api/auth/verify-email?token={user.EmailConfirmationToken}";
+
+            await _emailService.SendAsync(
+                user.Email,
+                "Verify your email",
+                $"Click this link to verify your email:\n{verifyUrl}"
+            );
+
+            return Ok($"To login please click the verification link sent to {dto.Email}.");
+        }
+
+        /// <summary>
+        /// Controller to verify token
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u =>
+                u.EmailConfirmationToken == token);
+
+            if (user == null)
+                return BadRequest("User doesn't exist or Invalid verification token or Expired verification token. Please sign up again");
+                
+            if (user.EmailConfirmationTokenExpires < DateTime.UtcNow)
+            {
+                _context.Users.Remove(user);
+                return BadRequest("User doesn't exist or Invalid verification token or Expired verification token. Please sign up again");
+            }
+
+            user.EmailConfirmed = true;
+            user.EmailConfirmationToken = null;
+            user.EmailConfirmationTokenExpires = null;
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Email verified successfully.");
+        }
+
 
         /// <summary>
         /// Api to log into the system.
@@ -38,6 +127,9 @@ namespace BlogApi.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName);
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 return Unauthorized("Invalid username or password");
+
+            if (!user.EmailConfirmed)
+                return Unauthorized("Please verify your email first.");
 
             var token = GenerateJwtToken(user);
 
