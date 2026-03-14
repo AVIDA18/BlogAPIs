@@ -33,7 +33,7 @@ namespace BlogApi.Controllers
         /// like select auther wise or categorywise blogs.
         /// </summary>
         /// <returns></returns>
-        
+
         // [HttpGet("getBlogs")]
         // public async Task<IActionResult> GetBlogs()
         // {
@@ -47,11 +47,92 @@ namespace BlogApi.Controllers
 
         [HttpGet("getBlogs")]
         public async Task<IActionResult> GetBlogs(
-            int page = 1,
-            int pageSize = 10,
-            int? categoryId = null,
-            int? authorId = null)
+        int page = 1,
+        int pageSize = 10,
+        string? categorySlug = null,
+        int? authorId = null)
         {
+            // Ensure page and pageSize have valid values
+            page = page < 1 ? 1 : page;
+            pageSize = pageSize < 1 ? 10 : pageSize;
+            pageSize = Math.Min(pageSize, 50);
+
+            // Base query with related entities
+            IQueryable<Blog> query = _context.Blogs
+                .Include(b => b.Author)
+                .Include(b => b.BlogCategory)
+                .Include(b => b.Images);
+
+            // Filter by category slug (matches BlogCategory.Slug column)
+            if (!string.IsNullOrWhiteSpace(categorySlug))
+            {
+                query = query.Where(b => b.BlogCategory != null
+                                         && b.BlogCategory.Slug == categorySlug);
+            }
+
+            // Filter by author if provided
+            if (authorId.HasValue)
+            {
+                query = query.Where(b => b.AuthorId == authorId);
+            }
+
+            // Count total blogs after filters
+            var totalCount = await query.CountAsync();
+
+            // Apply ordering and pagination
+            var blogs = await query
+                .OrderByDescending(b => b.BlogDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Return result
+            return Ok(new
+            {
+                data = blogs,
+                page,
+                pageSize,
+                totalCount,
+                totalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
+        }
+
+        /// <summary>
+        /// Get individual blog by Title slug
+        /// </summary>
+        /// <param name="slug"></param>
+        /// <returns></returns>
+        [HttpGet("getBlogsByTitleSlug/{slug}")]
+        public async Task<IActionResult> GetBlogBySlug(string slug)
+        {
+            var blog = await _context.Blogs
+                .Include(b => b.Author)
+                .Include(b => b.BlogCategory)
+                .Include(b => b.Images)
+                .FirstOrDefaultAsync(b => b.Slug == slug);
+
+            if (blog == null)
+                return NotFound();
+
+            return Ok(blog);
+        }
+
+        /// <summary>
+        /// Here search is performed for all existing Blogs on the basis of title content and date with paginated results.
+        /// </summary>
+        /// <param name="searchQuery"></param>
+        /// <returns></returns>
+        [HttpGet("searchBlogs")]
+        public async Task<IActionResult> Search(
+            string searchQuery,
+            int page = 1,
+            int pageSize = 10)
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery))
+                return BadRequest("Search query is required.");
+
+            searchQuery = searchQuery.Trim();
+
             page = page < 1 ? 1 : page;
             pageSize = pageSize < 1 ? 10 : pageSize;
             pageSize = Math.Min(pageSize, 50);
@@ -61,17 +142,16 @@ namespace BlogApi.Controllers
                 .Include(b => b.BlogCategory)
                 .Include(b => b.Images);
 
-            // Filter by category (if selected)
-            if (categoryId.HasValue)
-            {
-                query = query.Where(b => b.BlogCategoryId == categoryId);
-            }
+            //Search logic
+            bool isFullDate = DateTime.TryParse(searchQuery, out DateTime searchDate);
+            bool isYearOnly = int.TryParse(searchQuery, out int searchYear) && searchQuery.Length == 4;
 
-            // Filter by author (if selected)
-            if (authorId.HasValue)
-            {
-                query = query.Where(b => b.AuthorId == authorId);
-            }
+            query = query.Where(b =>
+                EF.Functions.Like(b.Title, $"%{searchQuery}%") ||
+                EF.Functions.Like(b.Content, $"%{searchQuery}%") ||
+                (isFullDate && b.BlogDate.Date == searchDate.Date) ||
+                (isYearOnly && b.BlogDate.Year == searchYear)
+            );
 
             var totalCount = await query.CountAsync();
 
@@ -91,20 +171,6 @@ namespace BlogApi.Controllers
             });
         }
 
-        [HttpGet("getBlogsByTitleSlug/{slug}")]
-        public async Task<IActionResult> GetBlogBySlug(string slug)
-        {
-            var blog = await _context.Blogs
-                .Include(b => b.Author)
-                .Include(b => b.BlogCategory)
-                .Include(b => b.Images)
-                .FirstOrDefaultAsync(b => b.Slug == slug);
-
-            if (blog == null)
-                return NotFound();
-
-            return Ok(blog);
-        }
 
 
         /// <summary>
@@ -124,7 +190,10 @@ namespace BlogApi.Controllers
                     Title = blogDto.Title,
                     Content = blogDto.Content,
                     Slug = SlugHelper.GenerateSlug(blogDto.Title),
+                    BlogDate = blogDto.BlogDate ?? DateTime.UtcNow,
                     CreatedAt = DateTime.UtcNow,
+                    ActualAuthor = blogDto.ActualAuthor,
+                    Source = blogDto.Source,
                     AuthorId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value),
                     BlogCategoryId = blogDto.BlogCategoryId
                 };
@@ -132,7 +201,7 @@ namespace BlogApi.Controllers
                 _context.Blogs.Add(blog);
                 await _context.SaveChangesAsync();
 
-                var uploadedImageUrls = blogDto.Files != null 
+                var uploadedImageUrls = blogDto.Files != null
                     ? await _imageHelper.UploadImagesAsync(blogDto.Files)
                     : new List<string>();
 
@@ -212,8 +281,11 @@ namespace BlogApi.Controllers
                 blog.Title = blogDto.Title;
                 blog.Slug = SlugHelper.GenerateSlug(blogDto.Title);
                 blog.Content = blogDto.Content;
+                blog.ActualAuthor = blogDto.ActualAuthor;
+                blog.Source = blogDto.Source;
+                blog.BlogDate = blogDto.BlogDate ?? DateTime.UtcNow;
 
-                var uploadedImageUrls = blogDto.Files != null 
+                var uploadedImageUrls = blogDto.Files != null
                     ? await _imageHelper.UploadImagesAsync(blogDto.Files)
                     : new List<string>();
 

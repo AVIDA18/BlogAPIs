@@ -61,11 +61,17 @@ namespace BlogApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ActualAuthor")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
                     b.Property<int?>("BlogCategoryId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("BlogDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -75,8 +81,12 @@ namespace BlogApi.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Slug")
+                        .IsRequired()
                         .HasMaxLength(600)
                         .HasColumnType("nvarchar(600)");
+
+                    b.Property<string>("Source")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -90,8 +100,7 @@ namespace BlogApi.Migrations
                     b.HasIndex("BlogCategoryId");
 
                     b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasFilter("[Slug] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Blogs");
                 });
@@ -113,7 +122,17 @@ namespace BlogApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryName")
+                        .IsUnique();
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("BlogCategories");
                 });

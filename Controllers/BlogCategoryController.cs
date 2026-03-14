@@ -1,6 +1,7 @@
 using System.Text.Json;
 using BlogApi.Data;
 using BlogApi.DTOs.BlogCategory;
+using BlogApi.Helper;
 using BlogApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,6 +49,7 @@ namespace BlogApi.Controllers
             var newCategory = new Models.BlogCategory
             {
                 CategoryName = saveDto.CategoryName,
+                Slug = SlugHelper.GenerateSlug(saveDto.CategoryName),
                 Description = saveDto.Description
             };
 
@@ -86,6 +88,7 @@ namespace BlogApi.Controllers
             }
 
             category.CategoryName = saveDto.CategoryName;
+            category.Slug = SlugHelper.GenerateSlug(saveDto.CategoryName);
             category.Description = saveDto.Description;
 
             await _context.SaveChangesAsync();

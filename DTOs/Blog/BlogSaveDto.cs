@@ -10,6 +10,9 @@ namespace BlogApi.DTOs.Blog
         public string Title { get; set; } = string.Empty;
         [Required]
         public string Content { get; set; } = string.Empty;
+        public string? ActualAuthor{get; set;}
+        public string? Source{get; set;}
+        public DateTime? BlogDate { get; set; }
         //public List<string>? ImageUrls { get; set; }
         public List<IFormFile>? Files { get; set; }
     }

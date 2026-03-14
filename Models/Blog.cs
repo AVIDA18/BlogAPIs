@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using BlogApi.Models;
 
 namespace BlogApi.Models
 {
@@ -12,6 +11,9 @@ namespace BlogApi.Models
         public string Slug { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public DateTime BlogDate { get; set; }
+        public string? ActualAuthor{get; set;}
+        public string? Source{get; set;}
         public int? BlogCategoryId { get; set; }
         public BlogCategory? BlogCategory { get; set; }
         // ONE blog --> MANY images

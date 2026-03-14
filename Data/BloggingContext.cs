@@ -33,6 +33,16 @@ namespace BlogApi.Data
             //For uniqueness of blog
             modelBuilder.Entity<Blog>()
                 .HasIndex(u => u.Slug)
+                .IsUnique();  
+
+            //For uniqueness of blogCategory
+            modelBuilder.Entity<BlogCategory>()
+                .HasIndex(u => u.CategoryName)
+                .IsUnique(); 
+
+            //For uniqueness of blogCategory slug
+            modelBuilder.Entity<BlogCategory>()
+                .HasIndex(u => u.Slug)
                 .IsUnique();            
 
             // Restrict deletion of BlogCategory if it has related Blogs
