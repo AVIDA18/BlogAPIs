@@ -29,7 +29,6 @@ namespace BlogApi.Controllers
         /// </summary>
         /// <param name="blogId"></param>
         /// <returns></returns>
-        [Authorize]
         [HttpGet("{blogId}/comments")]
         public async Task<IActionResult> GetCommentsByBlogId(int blogId)
         {
