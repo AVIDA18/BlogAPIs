@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\",
+  "WorkspaceRootPath": "E:\\Github\\BlogAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|c:\\users\\luza\\onedrive\\desktop\\wait_till_\\blogapigit\\blogapis\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|e:\\github\\blogapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F670F030-5E12-BFCE-D4D7-8375E9ECF56B}|BlogApi.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -14,17 +14,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Program.cs",
+              "DocumentMoniker": "E:\\Github\\BlogAPI\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\LuZa\\OneDrive\\Desktop\\Wait_Till_\\BlogApiGit\\BlogAPIs\\Program.cs",
+              "ToolTip": "E:\\Github\\BlogAPI\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAD0AAAAAAAAAAAAAAGAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAD0AAAAAAAAAAAAAAEgAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-13T08:40:09.907Z",
               "EditorCaption": ""
