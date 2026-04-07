@@ -7,6 +7,9 @@ using BlogApi.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using BlogApi.DTOs.User;
+using BlogApi.DTOs.BlogCategory;
+using BlogApi.DTOs.Images;
 
 namespace BlogApi.Controllers
 {
@@ -102,20 +105,66 @@ namespace BlogApi.Controllers
         /// </summary>
         /// <param name="slug"></param>
         /// <returns></returns>
+        // [HttpGet("getBlogsByTitleSlug/{slug}")]
+        // public async Task<IActionResult> GetBlogBySlug(string slug)
+        // {
+        //     var blog = await _context.Blogs
+        //         .Include(b => b.Author)
+        //         .Include(b => b.BlogCategory)
+        //         .Include(b => b.Images)
+        //         .FirstOrDefaultAsync(b => b.Slug == slug);
+
+        //     if (blog == null)
+        //         return NotFound();
+
+        //     return Ok(blog);
+        // }
+
+        /// <summary>
+        /// Get individual blog by Title slug
+        /// </summary>
+        /// <param name="slug"></param>
+        /// <returns></returns>
         [HttpGet("getBlogsByTitleSlug/{slug}")]
         public async Task<IActionResult> GetBlogBySlug(string slug)
         {
             var blog = await _context.Blogs
-                .Include(b => b.Author)
-                .Include(b => b.BlogCategory)
-                .Include(b => b.Images)
-                .FirstOrDefaultAsync(b => b.Slug == slug);
+                .Where(b => b.Slug == slug)
+                .Select(b => new BlogListDto
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Slug = b.Slug,
+                    Content = b.Content,
+                    CreatedAt = b.CreatedAt,
+                    BlogDate = b.BlogDate,
+                    ActualAuthor = b.ActualAuthor,
+                    Source = b.Source,
+
+                    Users = new UserListDto
+                    {
+                        UserName = b.Author.UserName
+                    },
+
+                    Category = new BlogCategoryListDto
+                    {
+                        CategoryName = b.BlogCategory.CategoryName,
+                        Description = b.BlogCategory.Description
+                    },
+
+                    Images = b.Images.Select(i => new ImagesListDto
+                    {
+                        ImageUrl = i.ImageUrl
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
 
             if (blog == null)
                 return NotFound();
 
             return Ok(blog);
         }
+
 
         /// <summary>
         /// Here search is performed for all existing Blogs on the basis of title content and date with paginated results.
